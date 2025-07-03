@@ -1,12 +1,7 @@
 "use strict";
 
 
-let keys = {
-    "ArrowUp": false,
-    "ArrowDown": false,
-    "a": false,
-    "q": false
-};
+let keys = new Set();
 
 
 
@@ -21,6 +16,7 @@ class Player
     #speed;
     #score;
     #canvas;
+    #control;
     constructor(id, color, canvas)
     {
         if (id < 1 || id > 2)
@@ -31,9 +27,15 @@ class Player
         this.#color = color;
         this.#canvas = canvas;
         if (id === 1)
+        {
             this.#posX = 20;
+            this.#control = {up: "q", down: "a"};
+        }
         else
-            this.#posX = 1280 - 20 - this.#width;
+        {
+            this.#posX = this.#canvas.width - 20 - this.#width;
+            this.#control = {up: "ArrowUp", down: "ArrowDown"};
+        }
         this.#posY = (720 / 2) - (this.#height / 2);
         this.#speed = 10;
         this.#score = 0;
@@ -82,6 +84,16 @@ class Player
     {
         return this.#score;
     }
+
+    get down()
+    {
+        return this.#control.down;
+    }
+
+    get up()
+    {
+        return this.#control.up;
+    }
 };
 
 class Ball
@@ -100,7 +112,7 @@ class Ball
         this.#canvas = canvas;
         this.#posX = this.#canvas.width / 2;
         this.#posY = this.#canvas.height / 2;
-        this.#speed = 5;
+        this.#speed = 3;
         this.#color = color;
         this.#directionX = 1;
         this.#directionY = 1;
@@ -132,18 +144,17 @@ class Ball
     get goal()
     {
         if (this.#posX >= this.#canvas.width)
-        {
-            this.#posX = this.#canvas.width / 2;
             return (1);
-        }
         else if (this.#posX <= 0)
-        {
-            this.#posX = this.#canvas.width / 2;
             return (2);
-        }
         else
             return (0);
-    }
+    };
+
+    reset()
+    {
+            this.#posX = this.#canvas.width / 2;
+    };
 
     render(ctx)
     {
@@ -194,11 +205,14 @@ class Game
         this.handleKeys();
         this.#ball.move();
         let tmp = this.#ball.goal;
-        console.log(tmp);
-        if (tmp === 1)
-            this.#player1.addScore();
-        else if (tmp === 2)
-            this.#player2.addScore();
+        if ((tmp = this.#ball.goal) != 0)
+        {
+            if (tmp === 1)
+                this.#player1.addScore();
+            else if (tmp === 2)
+                this.#player2.addScore();
+            this.#ball.reset();
+        }
         this.#ball.bounce();
         this.#ball.hit(this.#player1);
         this.#ball.hit(this.#player2);
@@ -208,14 +222,14 @@ class Game
 
     handleKeys()
     {
-        if (keys["ArrowDown"] === true && keys["ArrowUp"] === false)
+       if (keys.has(this.#player2.down))
             this.#player2.update(1);
-        else if (keys["ArrowDown"] === false && keys["ArrowUp"] === true)
+        else if (keys.has(this.#player2.up))
             this.#player2.update(-1);
 
-        if (keys["a"] === true && keys["q"] === false)
+        if (keys.has(this.#player1.down))
             this.#player1.update(1);
-        else if (keys["a"] === false && keys["q"] === true)
+        else if (keys.has(this.#player1.up))
             this.#player1.update(-1);
     };
 
@@ -227,26 +241,12 @@ class Game
 
 function keyDownHandler(e)
 {
-    if (e.key === "ArrowUp")
-        keys["ArrowUp"] = true;
-    else if (e.key === "ArrowDown")
-        keys["ArrowDown"] = true;
-    else if (e.key === "q" || e.key === "Q")
-        keys["q"] = true;
-    else if (e.key === "a" || e.key === "A")
-        keys["a"] = true;
+    keys.add(e.key);
 }
 
 function keyUpHandler(e)
 {
-    if (e.key === "ArrowUp")
-        keys["ArrowUp"] = false;
-    else if (e.key === "ArrowDown")
-        keys["ArrowDown"] = false;
-    else if (e.key === "q" || e.key === "Q")
-        keys["q"] = false;
-    else if (e.key === "a" || e.key === "A")
-        keys["a"] = false;
+    keys.delete(e.key);   
 }
 
 try {
