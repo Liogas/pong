@@ -13,17 +13,16 @@ export class Ball
     #state; // 1 : peut bouger | 0 : immobile
     #countDown;
     #ctx;
-    constructor(color, canvas, ctx)
+    constructor(color, canvas, ctx, speed)
     {
         this.#width = 20;
         this.#canvas = canvas;
         this.#posX = this.#canvas.width / 2;
         this.#posY = this.#canvas.height / 2;
-        this.#speed = 8;
+        this.#speed = speed;
         this.#color = color;
         this.#directionX = 1;
         this.#directionY = 1;
-        this.#state = 0;
         this.#countDown = -1;
         this.#ctx = ctx;
     };
@@ -96,11 +95,6 @@ export class Ball
         return this.#directionY;
     }
 
-    get state()
-    {
-        return this.#state;
-    }
-
     get countDown()
     {
         return this.#countDown;
@@ -124,28 +118,13 @@ export class Ball
             return (0);
     };
 
-    // SETTERS
-    set state(val)
-    {
-        this.#state = val;
-    };
-
     /*
     * Methode qui permet de reinitialiser la balle apres un but, lance un compteur de 3 secondes pour le coup d'envoi
     */
     reset()
     {
-            this.#state = 0;
-            this.#countDown = 3;
-            let idTimeout = setInterval(() => {
-                this.#countDown--;
-                if (this.#countDown === 0)
-                    this.#state = 1;
-                else if (this.#countDown === -1)
-                    clearInterval(idTimeout);
-            }, 1000);
             if (this.#posY > this.#canvas.height - 20)
-                this.#posY = this.#canvas.heigth - 20;
+                this.#posY = this.#canvas.height - 20;
             if (this.#posY < 20)
                 this.#posY = 20;
             this.#posX = this.#canvas.width / 2; // La balle repart du centre du terrain
@@ -158,13 +137,5 @@ export class Ball
         ctx.fillStyle = this.#color;
         ctx.arc(this.#posX, this.#posY, this.#width / 2, 0, 2 * Math.PI);
         ctx.fill();
-        if (this.#countDown !== -1)
-        {
-            this.#ctx.font = "30px Arial";
-            if (this.#countDown !== 0)
-                this.#ctx.fillText(this.#countDown, this.#canvas.width / 2, this.#canvas.height / 2);
-            else
-                this.#ctx.fillText("GO !", this.#canvas.width / 2, this.#canvas.height / 2);
-        }
     };
 };

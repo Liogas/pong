@@ -12,7 +12,8 @@ export class Player
     #score;
     #canvas;
     #control;
-    constructor(id, color, canvas)
+    #ctx;
+    constructor(id, color, canvas, ctx, speed)
     {
         if (id < 1 || id > 2)
             throw new Error("id incorrect : " + id);
@@ -32,15 +33,17 @@ export class Player
             this.#control = {up: "ArrowUp", down: "ArrowDown"};
         }
         this.#posY = (720 / 2) - (this.#height / 2);
-        this.#speed = 10;
+        this.#speed = speed;
         this.#score = 0;
+        this.#ctx = ctx;
     };
 
+
     // Methode de rendu graphique pour le canvas
-    render(ctx)
+    render()
     {
-        ctx.fillStyle = this.#color;
-        ctx.fillRect(this.#posX, this.#posY, this.#width, this.#height);
+        this.#ctx.fillStyle = this.#color;
+        this.#ctx.fillRect(this.#posX, this.#posY, this.#width, this.#height);
     };
 
     // Methode qui met a jour la position de la barre du player
@@ -59,6 +62,11 @@ export class Player
     }
 
     // GETTERS
+    get id()
+    {
+        return this.#id;
+    }
+
     get posX()
     {
         return this.#posX;
