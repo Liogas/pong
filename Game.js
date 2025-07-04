@@ -59,7 +59,8 @@ class Game
         {
             this.#ctx.fillStyle = "rgb(255, 255, 255)";
             this.#ctx.font = "30px Arial";
-            this.#ctx.fillText("Jeu en pause !", this.#canvas.width / 2 - this.#canvas.width / 4, 50);
+            let text = "Jeu en pause !"
+            this.#ctx.fillText("Jeu en pause !", this.#canvas.width / 2 - this.#ctx.measureText(text).width / 2, 50);
         }
 
         if (this.#state != 3)
@@ -68,7 +69,8 @@ class Game
         {
             this.#ctx.fillStyle = "rgb(255, 255, 255)";
             this.#ctx.font = "30px Arial";
-            this.#ctx.fillText(`Player ${this.#winner.id} wins!`, this.#canvas.width / 2 - 100, this.#canvas.height / 2);
+            let text = `Player ${this.#winner.id} wins!`;
+            this.#ctx.fillText(text, this.#canvas.width / 2 - this.#ctx.measureText(text).width / 2, this.#canvas.height / 2);
         }
         
         this.#player1.render();
@@ -202,7 +204,7 @@ function keyUpHandler(e)
 
 try {
     let rules = {
-            scoreMax: 7,
+            scoreMax: 1,
             timeLimit: 5,
             ballSpeed: 8,
             playerSpeed: 10,
